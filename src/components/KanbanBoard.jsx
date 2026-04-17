@@ -4,13 +4,14 @@ import { useTasks } from './useTasks';
 import './KanbanBoard.css';
 
 const COLUMNS = ['To Do', 'In Progress', 'Done'];
+const USERS = ['Marco', 'Naxhito', 'Nena', 'Cualquiera'];
 
-export default function KanbanBoard({ onChangeProfile }) {
+export default function KanbanBoard({ currentUser, onChangeProfile }) {
   const { tasks, loading, updateTaskStatus, addTask } = useTasks();
   const [draggedTaskId, setDraggedTaskId] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
-  const [newTaskAssignee, setNewTaskAssignee] = useState('');
+  const [newTaskAssignee, setNewTaskAssignee] = useState(currentUser);
 
   const handleDragStart = (e, taskId) => {
     setDraggedTaskId(taskId);
@@ -59,8 +60,9 @@ export default function KanbanBoard({ onChangeProfile }) {
           </button>
         </div>
         <div className="header-right">
+          <span style={{ marginRight: '1rem', color: 'var(--text-secondary)' }}>Hola, {currentUser}</span>
           <button className="btn-secondary" onClick={onChangeProfile}>
-            <Settings size={18} /> Cambiar Vista
+            <Settings size={18} /> Cambiar Usuario
           </button>
         </div>
       </header>
@@ -72,11 +74,12 @@ export default function KanbanBoard({ onChangeProfile }) {
             value={newTaskTitle} 
             onChange={e => setNewTaskTitle(e.target.value)} 
           />
-          <input 
-            placeholder="Asignado a..." 
+          <select 
             value={newTaskAssignee} 
-            onChange={e => setNewTaskAssignee(e.target.value)} 
-          />
+            onChange={e => setNewTaskAssignee(e.target.value)}
+          >
+            {USERS.map(u => <option key={u} value={u}>{u}</option>)}
+          </select>
           <button className="btn-primary" onClick={handleAddTask}>Agregar</button>
           <button className="btn-secondary" onClick={() => setIsAdding(false)}>Cancelar</button>
         </div>

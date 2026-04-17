@@ -12,9 +12,23 @@
   --shadow-glow: 0 0 15px rgba(59, 130, 246, 0.3);
 }
 
-[data-profile="accessible"] {
-  --base-font-size: 22px;
-  --bg-gradient: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+[data-profile="Nena"] {
+  --base-font-size: 24px;
+  --bg-gradient: linear-gradient(135deg, #1e293b 0%, #4c1d95 100%);
+  --accent-color: #8b5cf6;
+  --accent-hover: #7c3aed;
+  --shadow-glow: 0 0 15px rgba(139, 92, 246, 0.4);
+}
+
+[data-profile="Marco"] {
+  --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
+}
+
+[data-profile="Naxhito"] {
+  --bg-gradient: linear-gradient(135deg, #0f172a 0%, #064e3b 100%);
+  --accent-color: #10b981;
+  --accent-hover: #059669;
+  --shadow-glow: 0 0 15px rgba(16, 185, 129, 0.3);
 }
 
 * {

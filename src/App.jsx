@@ -4,19 +4,22 @@ import KanbanBoard from './components/KanbanBoard'
 import './index.css'
 
 function App() {
-  const [profile, setProfile] = useState(null) // null, 'standard', 'accessible'
+  const [user, setUser] = useState(null) // null, 'Marco', 'Naxhito', 'Nena'
 
-  const handleSelectProfile = (selectedProfile) => {
-    setProfile(selectedProfile)
-    document.documentElement.setAttribute('data-profile', selectedProfile)
+  const handleSelectUser = (selectedUser) => {
+    setUser(selectedUser)
+    document.documentElement.setAttribute('data-profile', selectedUser)
   }
 
   return (
     <div className="app-container">
-      {!profile ? (
-        <ViewProfileSelector onSelectProfile={handleSelectProfile} />
+      {!user ? (
+        <ViewProfileSelector onSelectProfile={handleSelectUser} />
       ) : (
-        <KanbanBoard onChangeProfile={() => setProfile(null)} />
+        <KanbanBoard currentUser={user} onChangeProfile={() => {
+          setUser(null);
+          document.documentElement.removeAttribute('data-profile');
+        }} />
       )}
     </div>
   )
