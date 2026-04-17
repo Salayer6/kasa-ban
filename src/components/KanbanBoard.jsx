@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Settings, Plus } from 'lucide-react';
 import { useTasks } from './useTasks';
+import { translations } from './translations';
 import './KanbanBoard.css';
 
-const COLUMNS = ['To Do', 'In Progress', 'Done'];
+const DB_COLUMNS = ['To Do', 'In Progress', 'Done'];
 const USERS = ['Marco', 'Naxhito', 'Nena', 'Cualquiera'];
 
 export default function KanbanBoard({ currentUser, onChangeProfile }) {
@@ -11,7 +12,15 @@ export default function KanbanBoard({ currentUser, onChangeProfile }) {
   const [draggedTaskId, setDraggedTaskId] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  
+  const t = translations[currentUser] || translations.Naxhito;
   const [newTaskAssignee, setNewTaskAssignee] = useState(currentUser);
+
+  // Map database column names to translated display names
+  const displayColumns = DB_COLUMNS.map((dbName, index) => ({
+    id: dbName,
+    label: t.columns[index]
+  }));
 
   const handleDragStart = (e, taskId) => {
     setDraggedTaskId(taskId);
@@ -43,9 +52,9 @@ export default function KanbanBoard({ currentUser, onChangeProfile }) {
   const handleAddTask = (e) => {
     e.preventDefault();
     if (newTaskTitle.trim()) {
-      addTask({ title: newTaskTitle, status: 'To Do', assignedTo: newTaskAssignee || 'Unassigned' });
+      addTask({ title: newTaskTitle, status: 'To Do', assignedTo: newTaskAssignee || t.unassigned });
       setNewTaskTitle('');
-      setNewTaskAssignee('');
+      setNewTaskAssignee(currentUser);
       setIsAdding(false);
     }
   };
@@ -56,21 +65,21 @@ export default function KanbanBoard({ currentUser, onChangeProfile }) {
         <div className="header-left">
           <h1>Kasa-ban</h1>
           <button className="btn-primary" onClick={() => setIsAdding(true)} style={{ marginLeft: '1rem' }}>
-            <Plus size={18} /> Nueva Tarea
+            <Plus size={18} /> {t.newTask}
           </button>
         </div>
         <div className="header-right">
-          <span style={{ marginRight: '1rem', color: 'var(--text-secondary)' }}>Hola, {currentUser}</span>
+          <span className="user-greeting">{t.hello}, {currentUser}</span>
           <button className="btn-secondary" onClick={onChangeProfile}>
-            <Settings size={18} /> Cambiar Usuario
+            <Settings size={18} /> {t.switchUser}
           </button>
         </div>
       </header>
 
       {isAdding && (
-        <div className="glass-panel" style={{ padding: '1rem', display: 'flex', gap: '1rem' }}>
+        <div className="task-add-form glass-panel">
           <input 
-            placeholder="Título de la tarea" 
+            placeholder={t.taskTitlePlaceholder} 
             value={newTaskTitle} 
             onChange={e => setNewTaskTitle(e.target.value)} 
           />
@@ -80,25 +89,27 @@ export default function KanbanBoard({ currentUser, onChangeProfile }) {
           >
             {USERS.map(u => <option key={u} value={u}>{u}</option>)}
           </select>
-          <button className="btn-primary" onClick={handleAddTask}>Agregar</button>
-          <button className="btn-secondary" onClick={() => setIsAdding(false)}>Cancelar</button>
+          <div className="form-actions">
+            <button className="btn-primary" onClick={handleAddTask}>{t.add}</button>
+            <button className="btn-secondary" onClick={() => setIsAdding(false)}>{t.cancel}</button>
+          </div>
         </div>
       )}
 
       <main className="kanban-board">
-        {COLUMNS.map(col => (
+        {displayColumns.map(col => (
           <div 
-            key={col} 
+            key={col.id} 
             className="kanban-column glass-panel"
             onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, col)}
+            onDrop={(e) => handleDrop(e, col.id)}
           >
-            <h2>{col}</h2>
+            <h2>{col.label}</h2>
             <div className="kanban-tasks">
               {loading ? (
-                <div className="loading-state">Cargando tareas...</div>
+                <div className="loading-state">{t.loading}</div>
               ) : (
-                tasks.filter(t => t.status === col).map(task => (
+                tasks.filter(t => t.status === col.id).map(task => (
                   <div 
                     key={task.id} 
                     className="task-card"
@@ -120,3 +131,4 @@ export default function KanbanBoard({ currentUser, onChangeProfile }) {
     </div>
   );
 }
+
