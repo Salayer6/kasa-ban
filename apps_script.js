@@ -43,8 +43,12 @@ function doGet(e) {
     }
     
     return ContentService.createTextOutput(JSON.stringify(tasks))
-      .setMimeType(ContentService.MimeType.JSON);
-    
+      .setMimeType(ContentService.MimeType.JSON)
+      .addMetaTag('viewport', 'width=device-width, initial-scale=1'); // This is not for JSON but usually we add headers like this:
+    /* 
+       Apps Script handles CORS differently. 
+       Usually we don't need to add headers manually for JSON output as it's handled by Google.
+    */
   } catch(error) {
     return ContentService.createTextOutput(JSON.stringify({ error: error.message }))
       .setMimeType(ContentService.MimeType.JSON);

@@ -9,7 +9,7 @@ const USERS = ['Marco', 'Naxhito', 'Nena', 'Cualquiera'];
 
 export default function KanbanBoard({ currentUser, onChangeProfile }) {
   const [draggedTaskId, setDraggedTaskId] = useState(null);
-  const { tasks, loading, updateTaskStatus, addTask } = useTasks(!draggedTaskId);
+  const { tasks, loading, error, updateTaskStatus, addTask, refetch } = useTasks(!draggedTaskId);
   const [isAdding, setIsAdding] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [activeMobileColumn, setActiveMobileColumn] = useState('To Do');
@@ -59,11 +59,15 @@ export default function KanbanBoard({ currentUser, onChangeProfile }) {
   };
 
   const requestNotificationPermission = () => {
-    Notification.requestPermission().then(permission => {
-      if (permission === 'granted') {
-        alert('¡Notificaciones activadas!');
-      }
-    });
+    if (typeof Notification !== 'undefined') {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          alert('¡Notificaciones activadas!');
+        }
+      });
+    } else {
+      alert('Tu navegador no soporta notificaciones.');
+    }
   };
 
   return (
@@ -82,7 +86,7 @@ export default function KanbanBoard({ currentUser, onChangeProfile }) {
             title="Activar notificaciones"
             style={{ marginRight: '0.5rem' }}
           >
-            {Notification.permission === 'granted' ? <Bell size={18} /> : <BellOff size={18} />}
+            {(typeof Notification !== 'undefined' && Notification.permission === 'granted') ? <Bell size={18} /> : <BellOff size={18} />}
           </button>
           <span className="user-greeting">{t.hello}, {currentUser}</span>
           <button className="btn-secondary" onClick={onChangeProfile}>
@@ -138,6 +142,15 @@ export default function KanbanBoard({ currentUser, onChangeProfile }) {
           >
             <h2>{col.icon} {col.label}</h2>
             <div className="kanban-tasks">
+              {error && (
+                <div className="error-state glass-panel">
+                  <BellOff size={24} color="#ef4444" />
+                  <p>{error}</p>
+                  <button className="btn-secondary" onClick={refetch} style={{ marginTop: '0.5rem' }}>
+                    Reintentar
+                  </button>
+                </div>
+              )}
               {loading ? (
                 <div className="loading-state">{t.loading}</div>
               ) : (

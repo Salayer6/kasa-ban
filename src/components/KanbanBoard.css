@@ -200,6 +200,24 @@
   padding: 2rem;
 }
 
+.error-state {
+  margin: 1rem 0;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  animation: slideIn 0.3s ease-out;
+}
+
+.error-state p {
+  color: #ef4444;
+  font-size: 0.9em;
+  margin: 0;
+}
+
 /* Mobile Adjustments */
 @media (max-width: 768px) {
   .kanban-layout {

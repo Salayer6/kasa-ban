@@ -11,7 +11,7 @@ export function useTasks(pollingEnabled = true) {
 
   const showNotification = (title, body) => {
     // Solo mostramos la notificación si la app NO es la pestaña activa (está en segundo plano)
-    if (Notification.permission === 'granted' && document.hidden) {
+    if (typeof Notification !== 'undefined' && Notification.permission === 'granted' && document.hidden) {
       new Notification(title, { 
         body,
         icon: '/favicon.svg'
@@ -24,7 +24,12 @@ export function useTasks(pollingEnabled = true) {
       // Load from localStorage or use defaults
       const local = localStorage.getItem('kasa-ban-tasks');
       if (local) {
-        setTasks(JSON.parse(local));
+        try {
+          setTasks(JSON.parse(local));
+        } catch (e) {
+          console.error('Failed to parse local tasks', e);
+          localStorage.removeItem('kasa-ban-tasks');
+        }
       } else {
         const defaults = [
           { id: '1', title: 'Comprar pan', status: 'To Do', assignedTo: 'Naxhito' },
@@ -38,16 +43,22 @@ export function useTasks(pollingEnabled = true) {
     }
 
     try {
-      const res = await fetch(MOCK_URL);
+      setError(null);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
+      
+      const res = await fetch(MOCK_URL, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      
       if (!res.ok) throw new Error('Network response was not ok');
       const data = await res.json();
       
       // Solo actualizamos si recibimos datos válidos (array)
       if (Array.isArray(data)) {
         // Detectamos cambios para notificar
-        if (prevTasksRef.current.length > 0) {
-          const newTasks = data.filter(nt => !prevTasksRef.current.find(ot => String(ot.id) === String(nt.id)));
-          const completedTasks = data.filter(nt => nt.status === 'Done' && prevTasksRef.current.find(ot => String(ot.id) === String(nt.id) && ot.status !== 'Done'));
+        if (prevTasksRef.current && prevTasksRef.current.length > 0) {
+          const newTasks = data.filter(nt => nt && nt.id && !prevTasksRef.current.find(ot => ot && String(ot.id) === String(nt.id)));
+          const completedTasks = data.filter(nt => nt && nt.status === 'Done' && prevTasksRef.current.find(ot => ot && String(ot.id) === String(nt.id) && ot.status !== 'Done'));
 
           newTasks.forEach(t => showNotification('Nueva Tarea', `Alguien agregó: ${t.title}`));
           completedTasks.forEach(t => showNotification('¡Tarea Terminada!', `Se completó: ${t.title}`));
@@ -56,6 +67,8 @@ export function useTasks(pollingEnabled = true) {
         setTasks(data);
         prevTasksRef.current = data;
         localStorage.setItem('kasa-ban-tasks', JSON.stringify(data));
+      } else if (data && data.error) {
+        setError(data.error);
       }
     } catch (err) {
       console.error('Error fetching tasks:', err);
@@ -63,7 +76,13 @@ export function useTasks(pollingEnabled = true) {
       
       // Fallback a localStorage si falla la red
       const local = localStorage.getItem('kasa-ban-tasks');
-      if (local) setTasks(JSON.parse(local));
+      if (local) {
+        try {
+          setTasks(JSON.parse(local));
+        } catch (e) {
+          localStorage.removeItem('kasa-ban-tasks');
+        }
+      }
     } finally {
       setLoading(false);
     }
@@ -116,6 +135,6 @@ export function useTasks(pollingEnabled = true) {
     syncTasks([...tasks, task]);
   }
 
-  return { tasks, loading, error, updateTaskStatus, addTask };
+  return { tasks, loading, error, updateTaskStatus, addTask, refetch: fetchTasks };
 }
 
