@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 // Replace with actual Apps Script URL later
 const MOCK_URL = 'https://script.google.com/macros/s/AKfycbxFC13uELyjekZjXwzH047W8gaKS3pVYK0_dhMG42YBBEP2Up7b1rhItYL5qsIi3YlE/exec'; 
@@ -7,6 +7,17 @@ export function useTasks(pollingEnabled = true) {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const prevTasksRef = useRef([]);
+
+  const showNotification = (title, body) => {
+    // Solo mostramos la notificación si la app NO es la pestaña activa (está en segundo plano)
+    if (Notification.permission === 'granted' && document.hidden) {
+      new Notification(title, { 
+        body,
+        icon: '/favicon.svg'
+      });
+    }
+  };
 
   const fetchTasks = useCallback(async () => {
     if (!MOCK_URL || MOCK_URL.includes('YOUR_SCRIPT_ID')) {
@@ -33,7 +44,17 @@ export function useTasks(pollingEnabled = true) {
       
       // Solo actualizamos si recibimos datos válidos (array)
       if (Array.isArray(data)) {
+        // Detectamos cambios para notificar
+        if (prevTasksRef.current.length > 0) {
+          const newTasks = data.filter(nt => !prevTasksRef.current.find(ot => String(ot.id) === String(nt.id)));
+          const completedTasks = data.filter(nt => nt.status === 'Done' && prevTasksRef.current.find(ot => String(ot.id) === String(nt.id) && ot.status !== 'Done'));
+
+          newTasks.forEach(t => showNotification('Nueva Tarea', `Alguien agregó: ${t.title}`));
+          completedTasks.forEach(t => showNotification('¡Tarea Terminada!', `Se completó: ${t.title}`));
+        }
+
         setTasks(data);
+        prevTasksRef.current = data;
         localStorage.setItem('kasa-ban-tasks', JSON.stringify(data));
       }
     } catch (err) {

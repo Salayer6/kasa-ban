@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, Plus, Layout, ListTodo, Clock, CheckCircle2 } from 'lucide-react';
+import { Settings, Plus, Layout, ListTodo, Clock, CheckCircle2, Bell, BellOff } from 'lucide-react';
 import { useTasks } from './useTasks';
 import { translations } from './translations';
 import './KanbanBoard.css';
@@ -58,6 +58,14 @@ export default function KanbanBoard({ currentUser, onChangeProfile }) {
     }
   };
 
+  const requestNotificationPermission = () => {
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        alert('¡Notificaciones activadas!');
+      }
+    });
+  };
+
   return (
     <div className="kanban-layout">
       <header className="kanban-header glass-panel">
@@ -68,6 +76,14 @@ export default function KanbanBoard({ currentUser, onChangeProfile }) {
           </button>
         </div>
         <div className="header-right">
+          <button 
+            className="btn-icon-sm" 
+            onClick={requestNotificationPermission} 
+            title="Activar notificaciones"
+            style={{ marginRight: '0.5rem' }}
+          >
+            {Notification.permission === 'granted' ? <Bell size={18} /> : <BellOff size={18} />}
+          </button>
           <span className="user-greeting">{t.hello}, {currentUser}</span>
           <button className="btn-secondary" onClick={onChangeProfile}>
             <Settings size={18} /> {t.switchUser}
