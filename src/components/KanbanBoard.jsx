@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, Plus, Layout, ListTodo, Clock, CheckCircle2, Bell, BellOff } from 'lucide-react';
+import { Settings, Plus, Layout, ListTodo, Clock, CheckCircle2, Bell, BellOff, Trash2 } from 'lucide-react';
 import { useTasks } from './useTasks';
 import { translations } from './translations';
 import './KanbanBoard.css';
@@ -9,7 +9,7 @@ const USERS = ['Marco', 'Naxhito', 'Nena', 'Cualquiera'];
 
 export default function KanbanBoard({ currentUser, onChangeProfile }) {
   const [draggedTaskId, setDraggedTaskId] = useState(null);
-  const { tasks, loading, error, updateTaskStatus, addTask, refetch } = useTasks(!draggedTaskId);
+  const { tasks, loading, error, updateTaskStatus, addTask, deleteTask, refetch } = useTasks(!draggedTaskId);
   const [isAdding, setIsAdding] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [activeMobileColumn, setActiveMobileColumn] = useState('To Do');
@@ -165,6 +165,15 @@ export default function KanbanBoard({ currentUser, onChangeProfile }) {
                     <h3>{task.title}</h3>
                     <div className="task-meta">
                       <span className="task-assignee">{task.assignedTo}</span>
+                      {task.status === 'Done' && (
+                        <button 
+                          className="btn-delete" 
+                          onClick={() => deleteTask(task.id)}
+                          title="Borrar tarea"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))

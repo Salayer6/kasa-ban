@@ -135,6 +135,11 @@ export function useTasks(pollingEnabled = true) {
     syncTasks([...tasks, task]);
   }
 
-  return { tasks, loading, error, updateTaskStatus, addTask, refetch: fetchTasks };
+  const deleteTask = (taskId) => {
+    const updated = tasks.filter(t => String(t.id) !== String(taskId));
+    syncTasks(updated);
+  };
+
+  return { tasks, loading, error, updateTaskStatus, addTask, deleteTask, refetch: fetchTasks };
 }
 
