@@ -140,6 +140,9 @@
   padding: 1rem;
   cursor: grab;
   transition: transform 0.2s, box-shadow 0.2s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
 }
 
 .task-card:hover {

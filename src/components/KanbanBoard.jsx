@@ -129,7 +129,7 @@ export default function KanbanBoard({ currentUser, onChangeProfile }) {
                   <div 
                     key={task.id} 
                     className="task-card"
-                    draggable
+                    draggable="true"
                     onDragStart={(e) => handleDragStart(e, task.id)}
                     onDragEnd={handleDragEnd}
                   >
