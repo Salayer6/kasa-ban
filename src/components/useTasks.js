@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 // Replace with actual Apps Script URL later
-const MOCK_URL = 'https://script.google.com/macros/s/AKfycbxFC13uELyjekZjXwzH047W8gaKS3pVYK0_dhMG42YBBEP2Up7b1rhItYL5qsIi3YlE/exec;' // 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec'
+const MOCK_URL = 'https://script.google.com/macros/s/AKfycbxFC13uELyjekZjXwzH047W8gaKS3pVYK0_dhMG42YBBEP2Up7b1rhItYL5qsIi3YlE/exec'; 
 
 export function useTasks() {
   const [tasks, setTasks] = useState([]);
@@ -9,7 +9,7 @@ export function useTasks() {
   const [error, setError] = useState(null);
 
   const fetchTasks = useCallback(async () => {
-    if (!MOCK_URL) {
+    if (!MOCK_URL || MOCK_URL.includes('YOUR_SCRIPT_ID')) {
       // Load from localStorage or use defaults
       const local = localStorage.getItem('kasa-ban-tasks');
       if (local) {
@@ -27,13 +27,22 @@ export function useTasks() {
     }
 
     try {
-      // Use no-cache to ensure we get latest from Sheets
       const res = await fetch(MOCK_URL);
+      if (!res.ok) throw new Error('Network response was not ok');
       const data = await res.json();
-      setTasks(data);
-      localStorage.setItem('kasa-ban-tasks', JSON.stringify(data));
+      
+      // Solo actualizamos si recibimos datos válidos (array)
+      if (Array.isArray(data)) {
+        setTasks(data);
+        localStorage.setItem('kasa-ban-tasks', JSON.stringify(data));
+      }
     } catch (err) {
-      setError('Error al cargar tareas');
+      console.error('Error fetching tasks:', err);
+      setError('Error al conectar con la base de datos');
+      
+      // Fallback a localStorage si falla la red
+      const local = localStorage.getItem('kasa-ban-tasks');
+      if (local) setTasks(JSON.parse(local));
     } finally {
       setLoading(false);
     }
