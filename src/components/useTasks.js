@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 // Replace with actual Apps Script URL later
 const MOCK_URL = 'https://script.google.com/macros/s/AKfycbxFC13uELyjekZjXwzH047W8gaKS3pVYK0_dhMG42YBBEP2Up7b1rhItYL5qsIi3YlE/exec'; 
 
-export function useTasks() {
+export function useTasks(pollingEnabled = true) {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -51,9 +51,9 @@ export function useTasks() {
   useEffect(() => {
     fetchTasks();
 
-    // Only set interval if we HAVE a real URL to poll from
+    // Only set interval if we HAVE a real URL to poll from and polling is enabled
     let interval;
-    if (MOCK_URL) {
+    if (MOCK_URL && pollingEnabled) {
       interval = setInterval(fetchTasks, 10000);
     }
 
@@ -83,7 +83,10 @@ export function useTasks() {
   };
 
   const updateTaskStatus = (taskId, newStatus) => {
-    const updated = tasks.map(t => t.id === taskId ? { ...t, status: newStatus } : t);
+    const updated = tasks.map(t => {
+      // Use String() to ensure comparison works even if Google Sheets converts ID to number
+      return String(t.id) === String(taskId) ? { ...t, status: newStatus } : t;
+    });
     syncTasks(updated);
   };
 

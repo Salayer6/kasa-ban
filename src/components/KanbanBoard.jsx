@@ -8,8 +8,8 @@ const DB_COLUMNS = ['To Do', 'In Progress', 'Done'];
 const USERS = ['Marco', 'Naxhito', 'Nena', 'Cualquiera'];
 
 export default function KanbanBoard({ currentUser, onChangeProfile }) {
-  const { tasks, loading, updateTaskStatus, addTask } = useTasks();
   const [draggedTaskId, setDraggedTaskId] = useState(null);
+  const { tasks, loading, updateTaskStatus, addTask } = useTasks(!draggedTaskId);
   const [isAdding, setIsAdding] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [activeMobileColumn, setActiveMobileColumn] = useState('To Do');
