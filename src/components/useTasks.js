@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 // Replace with actual Apps Script URL later
-const MOCK_URL = null; // 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec'
+const MOCK_URL = 'https://script.google.com/macros/s/AKfycbxFC13uELyjekZjXwzH047W8gaKS3pVYK0_dhMG42YBBEP2Up7b1rhItYL5qsIi3YlE/exec;' // 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec'
 
 export function useTasks() {
   const [tasks, setTasks] = useState([]);
@@ -41,13 +41,13 @@ export function useTasks() {
 
   useEffect(() => {
     fetchTasks();
-    
+
     // Only set interval if we HAVE a real URL to poll from
     let interval;
     if (MOCK_URL) {
       interval = setInterval(fetchTasks, 10000);
     }
-    
+
     return () => {
       if (interval) clearInterval(interval);
     };
@@ -56,7 +56,7 @@ export function useTasks() {
   const syncTasks = async (updatedTasks) => {
     setTasks(updatedTasks);
     localStorage.setItem('kasa-ban-tasks', JSON.stringify(updatedTasks));
-    
+
     if (MOCK_URL) {
       try {
         // Apps Script sometimes prefers text/plain to avoid CORS preflight, 
