@@ -103,7 +103,10 @@ export default function KanbanBoard({ currentUser, onChangeProfile }) {
           <button 
             key={col.id} 
             className={`mobile-nav-item ${activeMobileColumn === col.id ? 'active' : ''}`}
-            onClick={() => setActiveMobileColumn(col.id)}
+            onClick={() => {
+              setActiveMobileColumn(col.id);
+              document.getElementById(`col-${col.id}`)?.scrollIntoView({ behavior: 'smooth' });
+            }}
           >
             {col.icon}
             <span>{col.label}</span>
@@ -115,7 +118,8 @@ export default function KanbanBoard({ currentUser, onChangeProfile }) {
         {displayColumns.map(col => (
           <div 
             key={col.id} 
-            className={`kanban-column glass-panel ${activeMobileColumn === col.id ? 'mobile-visible' : 'mobile-hidden'}`}
+            id={`col-${col.id}`}
+            className="kanban-column glass-panel"
             onDragOver={handleDragOver}
             onDrop={(e) => handleDrop(e, col.id)}
           >

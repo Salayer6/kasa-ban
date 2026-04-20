@@ -168,6 +168,29 @@
   border-radius: 4px;
 }
 
+.task-actions-mobile {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-icon-sm {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--surface-border);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon-sm:hover {
+  background: var(--accent-color);
+  color: white;
+}
+
 .loading-state {
   text-align: center;
   color: var(--text-secondary);
@@ -178,6 +201,8 @@
 @media (max-width: 768px) {
   .kanban-layout {
     padding: 0.5rem;
+    height: auto; /* Allow content to grow vertically */
+    scroll-padding-top: 120px; /* Adjust for sticky nav */
   }
 
   .kanban-header {
@@ -199,27 +224,23 @@
 
   .mobile-nav {
     display: flex;
+    position: sticky;
+    top: 0.5rem;
+    z-index: 100;
   }
 
   .kanban-board {
-    display: block;
+    display: flex;
+    flex-direction: column; /* Stacked columns */
     overflow-x: hidden;
-    padding-bottom: 5rem; /* Space for bottom content if any */
+    padding-bottom: 2rem;
+    gap: 1.5rem;
   }
 
   .kanban-column {
     min-width: 0;
     width: 100%;
-    margin-bottom: 1rem;
-  }
-
-  .mobile-hidden {
-    display: none;
-  }
-
-  .mobile-visible {
-    display: flex;
-    animation: slideIn 0.3s ease-out;
+    min-height: 200px; /* Ensure drop zone is always viable */
   }
 
   .user-greeting {
