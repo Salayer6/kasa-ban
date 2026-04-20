@@ -45,10 +45,13 @@ export default function KanbanBoard({ currentUser, onChangeProfile }) {
 
   const handleDrop = (e, targetStatus) => {
     e.preventDefault();
-    const taskId = e.dataTransfer.getData('text/plain');
+    // Use the state-stored ID as a fallback for dataTransfer, which is unreliable on mobile
+    const taskId = e.dataTransfer.getData('text/plain') || draggedTaskId;
+    
     if (taskId && targetStatus) {
       updateTaskStatus(taskId, targetStatus);
     }
+    setDraggedTaskId(null);
   };
 
   const handleAddTask = (e) => {
