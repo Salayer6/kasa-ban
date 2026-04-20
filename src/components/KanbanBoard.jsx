@@ -28,13 +28,9 @@ export default function KanbanBoard({ currentUser, onChangeProfile }) {
     setDraggedTaskId(taskId);
     e.dataTransfer.setData('text/plain', taskId);
     e.dataTransfer.effectAllowed = 'move';
-    setTimeout(() => {
-      e.target.style.opacity = '0.5';
-    }, 0);
   };
 
   const handleDragEnd = (e) => {
-    e.target.style.opacity = '1';
     setDraggedTaskId(null);
   };
 
@@ -45,13 +41,11 @@ export default function KanbanBoard({ currentUser, onChangeProfile }) {
 
   const handleDrop = (e, targetStatus) => {
     e.preventDefault();
-    // Use the state-stored ID as a fallback for dataTransfer, which is unreliable on mobile
-    const taskId = e.dataTransfer.getData('text/plain') || draggedTaskId;
+    const taskId = e.dataTransfer.getData('text/plain');
     
     if (taskId && targetStatus) {
       updateTaskStatus(taskId, targetStatus);
     }
-    setDraggedTaskId(null);
   };
 
   const handleAddTask = (e) => {

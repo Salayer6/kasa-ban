@@ -63,19 +63,17 @@ export function useTasks() {
   }, [fetchTasks]);
 
   const syncTasks = async (updatedTasks) => {
+    // 1. Update UI and LocalStorage
     setTasks(updatedTasks);
     localStorage.setItem('kasa-ban-tasks', JSON.stringify(updatedTasks));
 
-    if (MOCK_URL) {
+    // 2. Sync to Cloud
+    if (MOCK_URL && !MOCK_URL.includes('YOUR_SCRIPT_ID')) {
       try {
-        // Apps Script sometimes prefers text/plain to avoid CORS preflight, 
-        // but we treat it as JSON in the backend.
         await fetch(MOCK_URL, {
           method: 'POST',
-          mode: 'no-cors', // Common for Apps Script Simple POSTs
-          headers: {
-            'Content-Type': 'text/plain',
-          },
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify({ action: 'sync', tasks: updatedTasks }),
         });
       } catch (err) {
@@ -84,15 +82,14 @@ export function useTasks() {
     }
   };
 
-  const updateTaskStatus = async (taskId, newStatus) => {
-    const updatedTasks = tasks.map(t => t.id === taskId ? { ...t, status: newStatus } : t);
-    await syncTasks(updatedTasks);
+  const updateTaskStatus = (taskId, newStatus) => {
+    const updated = tasks.map(t => t.id === taskId ? { ...t, status: newStatus } : t);
+    syncTasks(updated);
   };
 
-  const addTask = async (newTask) => {
+  const addTask = (newTask) => {
     const task = { ...newTask, id: Date.now().toString() };
-    const updatedTasks = [...tasks, task];
-    await syncTasks(updatedTasks);
+    syncTasks([...tasks, task]);
   }
 
   return { tasks, loading, error, updateTaskStatus, addTask };
