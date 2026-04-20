@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, Plus } from 'lucide-react';
+import { Settings, Plus, Layout, ListTodo, Clock, CheckCircle2 } from 'lucide-react';
 import { useTasks } from './useTasks';
 import { translations } from './translations';
 import './KanbanBoard.css';
@@ -12,6 +12,7 @@ export default function KanbanBoard({ currentUser, onChangeProfile }) {
   const [draggedTaskId, setDraggedTaskId] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [activeMobileColumn, setActiveMobileColumn] = useState('To Do');
   
   const t = translations[currentUser] || translations.Naxhito;
   const [newTaskAssignee, setNewTaskAssignee] = useState(currentUser);
@@ -19,7 +20,8 @@ export default function KanbanBoard({ currentUser, onChangeProfile }) {
   // Map database column names to translated display names
   const displayColumns = DB_COLUMNS.map((dbName, index) => ({
     id: dbName,
-    label: t.columns[index]
+    label: t.columns[index],
+    icon: index === 0 ? <ListTodo size={20} /> : index === 1 ? <Clock size={20} /> : <CheckCircle2 size={20} />
   }));
 
   const handleDragStart = (e, taskId) => {
@@ -96,15 +98,28 @@ export default function KanbanBoard({ currentUser, onChangeProfile }) {
         </div>
       )}
 
+      <nav className="mobile-nav glass-panel">
+        {displayColumns.map(col => (
+          <button 
+            key={col.id} 
+            className={`mobile-nav-item ${activeMobileColumn === col.id ? 'active' : ''}`}
+            onClick={() => setActiveMobileColumn(col.id)}
+          >
+            {col.icon}
+            <span>{col.label}</span>
+          </button>
+        ))}
+      </nav>
+
       <main className="kanban-board">
         {displayColumns.map(col => (
           <div 
             key={col.id} 
-            className="kanban-column glass-panel"
+            className={`kanban-column glass-panel ${activeMobileColumn === col.id ? 'mobile-visible' : 'mobile-hidden'}`}
             onDragOver={handleDragOver}
             onDrop={(e) => handleDrop(e, col.id)}
           >
-            <h2>{col.label}</h2>
+            <h2>{col.icon} {col.label}</h2>
             <div className="kanban-tasks">
               {loading ? (
                 <div className="loading-state">{t.loading}</div>

@@ -11,6 +11,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .kanban-header h1 {
@@ -56,6 +58,45 @@
 .form-actions {
   display: flex;
   gap: 1rem;
+}
+
+.mobile-nav {
+  display: none;
+  justify-content: space-around;
+  padding: 0.75rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  margin-bottom: 0.5rem;
+}
+
+.mobile-nav-item {
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+}
+
+.mobile-nav-item:hover {
+  background: transparent;
+  transform: none;
+  box-shadow: none;
+}
+
+.mobile-nav-item.active {
+  color: var(--accent-color);
+}
+
+.mobile-nav-item.active span {
+  font-weight: 700;
 }
 
 .kanban-board {
@@ -131,4 +172,67 @@
   text-align: center;
   color: var(--text-secondary);
   padding: 2rem;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .kanban-layout {
+    padding: 0.5rem;
+  }
+
+  .kanban-header {
+    padding: 1rem;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .header-left, .header-right {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .kanban-header h1 {
+    font-size: 1.5em;
+  }
+
+  .mobile-nav {
+    display: flex;
+  }
+
+  .kanban-board {
+    display: block;
+    overflow-x: hidden;
+    padding-bottom: 5rem; /* Space for bottom content if any */
+  }
+
+  .kanban-column {
+    min-width: 0;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .mobile-hidden {
+    display: none;
+  }
+
+  .mobile-visible {
+    display: flex;
+    animation: slideIn 0.3s ease-out;
+  }
+
+  .user-greeting {
+    font-size: 0.85em;
+  }
+
+  .btn-primary, .btn-secondary {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85em;
+  }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
 }
